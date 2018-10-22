@@ -9,6 +9,10 @@ from vyper.parser.parser import parse_to_lll
 from vyper.exceptions import ParserException
 
 
+routes = web.RouteTableDef()
+
+
+@routes.get('/')
 async def handle(request):
     return web.Response(text='Vyper Compiler. Version: {} \n'.format(vyper.__version__))
 
@@ -48,7 +52,16 @@ def _compile(data):
         return out_dict, 200
 
 
+@routes.route('OPTIONS', '/compile')
+async def compile_it(request):
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-type"
+    }
+    return web.json_response(status=200, headers=headers)
 
+
+@routes.post('/compile')
 async def compile_it(request):
     json = await request.json()
     out, status = _compile(json)
@@ -56,9 +69,5 @@ async def compile_it(request):
 
 
 app = web.Application()
-app.add_routes([
-                web.post('/compile', compile_it),
-                web.get('/', handle)
-            ])
-
+app.add_routes(routes)
 web.run_app(app)
