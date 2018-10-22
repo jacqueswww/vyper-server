@@ -1,0 +1,4 @@
+aiohttp==3.4.4
+vyper==0.1.0b4
+cchardet==2.1.4
+
