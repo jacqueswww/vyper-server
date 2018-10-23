@@ -10,6 +10,10 @@ from vyper.exceptions import ParserException
 
 
 routes = web.RouteTableDef()
+headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "X-Requested-With, Content-type"
+}
 
 
 @routes.get('/')
@@ -53,11 +57,7 @@ def _compile(data):
 
 
 @routes.route('OPTIONS', '/compile')
-async def compile_it(request):
-    headers = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "X-Requested-With, Content-type"
-    }
+async def compile_it_options(request):
     return web.json_response(status=200, headers=headers)
 
 
@@ -65,7 +65,7 @@ async def compile_it(request):
 async def compile_it(request):
     json = await request.json()
     out, status = _compile(json)
-    return web.json_response(out, status=status)
+    return web.json_response(out, status=status, headers=headers)
 
 
 app = web.Application()
