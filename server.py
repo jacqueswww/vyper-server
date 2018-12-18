@@ -3,9 +3,7 @@
 from aiohttp import web
 
 import vyper
-from vyper import compiler, optimizer
-from vyper.parser import lll_node
-from vyper.parser.parser import parse_to_lll
+from vyper.compiler import compile_code
 from vyper.exceptions import ParserException
 
 
@@ -29,13 +27,8 @@ def _compile(data):
             return {'status': 'failed', 'message': '"code" must be a non-empty string'}, 400
 
         try:
-            code = data['code']
-            out_dict = {
-                'abi': compiler.mk_full_signature(code),
-                'bytecode': '0x' + compiler.compile(code).hex(),
-                'bytecode_runtime': '0x' + compiler.compile(code, bytecode_runtime=True).hex(),
-                'ir': str(optimizer.optimize(parse_to_lll(code)))
-            }
+            out_dict = compile_code(code, ['abi', 'bytecode', 'bytecode_runtime', 'ir'])
+            out_dict['ir'] = str(out_dict['ir'])
         except ParserException as e:
             return {
                 'status': 'failed',
