@@ -27,7 +27,7 @@ def _compile(data):
             return {'status': 'failed', 'message': '"code" must be a non-empty string'}, 400
 
         try:
-            out_dict = compile_code(code, ['abi', 'bytecode', 'bytecode_runtime', 'ir'])
+            out_dict = compile_code(code, ['abi', 'bytecode', 'bytecode_runtime', 'ir', 'method_identifiers'])
             out_dict['ir'] = str(out_dict['ir'])
         except ParserException as e:
             return {
