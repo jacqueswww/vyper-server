@@ -39,7 +39,7 @@ def _compile(data):
                 ann = e.annotations[0]
                 col_offset, lineno = ann.col_offset, ann.lineno
             else:
-                col_offset, lineno = None
+                col_offset, lineno = None, None
             return {
                 'status': 'failed',
                 'message': str(e),
