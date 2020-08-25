@@ -4,7 +4,7 @@ from aiohttp import web
 
 import vyper
 from vyper.compiler import compile_code
-from vyper.exceptions import ParserException
+from vyper.exceptions import VyperException
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -32,19 +32,19 @@ def _compile(data):
         try:
             out_dict = compile_code(code, ['abi', 'bytecode', 'bytecode_runtime', 'ir', 'method_identifiers'])
             out_dict['ir'] = str(out_dict['ir'])
-        except ParserException as e:
+        except VyperException as e:
+            if e.col_offset and e.lineno:
+                col_offset, lineno = e.col_offset, e.lineno
+            elif e.annotations and len(e.annotations) > 0:
+                ann = e.annotations[0]
+                col_offset, lineno = ann.col_offset, ann.lineno
+            else:
+                col_offset, lineno = None
             return {
                 'status': 'failed',
                 'message': str(e),
-                'column': e.col_offset,
-                'line': e.lineno
-            }, 400
-        except SyntaxError as e:
-            return {
-                'status': 'failed',
-                'message': str(e),
-                'column': e.offset,
-                'line': e.lineno
+                'column': col_offset,
+                'line': lineno
             }, 400
 
         out_dict.update({'status': "success"})
