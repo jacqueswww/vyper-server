@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import asyncio
 import logging
 from aiohttp import web
 
@@ -59,7 +60,8 @@ async def compile_it_options(request):
 @routes.post('/compile')
 async def compile_it(request):
     json = await request.json()
-    out, status = await request.loop.run_in_executor(executor_pool, _compile, json)
+    loop = asyncio.get_event_loop()
+    out, status = await loop.run_in_executor(executor_pool, _compile, json)
     return web.json_response(out, status=status, headers=headers)
 
 
