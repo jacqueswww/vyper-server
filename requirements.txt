@@ -1,4 +1,4 @@
-aiohttp==3.7.4
+aiohttp==3.8.5
 vyper==0.3.8
 cchardet==2.1.7
 
